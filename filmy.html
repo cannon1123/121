@@ -331,13 +331,25 @@ async function leaderboard(days){
   return top.map((t,i)=>({ rank:i+1, user:t.username, gained:t.gained }));
 }
 
-function renderMovieButton(movie, me, unlocked) {
+function renderMovieButton(movie, me, unlocked, opts = {}) {
   if (!me) {
     return `<a class="btn" href="#" onclick="UI.show('login')">Zaloguj, aby oglądać</a>`;
   }
 
   if (unlocked || (movie.points_required || 0) === 0) {
-    return `<a class="btn" href="#" onclick="UI.show('watch',{id:${movie.id}})">▶️ Oglądaj</a>`;
+    let extra = '';
+    if (opts.extraButton) {
+      extra = `<button class="btn secondary" onclick="${opts.extraButton.onClick}">${opts.extraButton.label}</button>`;
+    }
+    return `
+      <a class="btn" href="#" onclick="UI.show('watch',{id:${movie.id}})">▶️ Oglądaj</a>
+      ${extra}
+    `;
+  }
+
+  let extra = '';
+  if (opts.extraButton) {
+    extra = `<button class="btn secondary" onclick="${opts.extraButton.onClick}">${opts.extraButton.label}</button>`;
   }
 
   return `
@@ -345,6 +357,7 @@ function renderMovieButton(movie, me, unlocked) {
       🔓 Odblokuj za ${movie.points_required} pkt
     </button>
     <span class="small">Masz: <span id="myPoints">…</span> pkt</span>
+    ${extra}
   `;
 }
 
