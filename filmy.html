@@ -331,6 +331,24 @@ async function leaderboard(days){
   return top.map((t,i)=>({ rank:i+1, user:t.username, gained:t.gained }));
 }
 
+function renderMovieButton(movie, me, unlocked) {
+  if (!me) {
+    return `<a class="btn" href="#" onclick="UI.show('login')">Zaloguj, aby oglądać</a>`;
+  }
+
+  if (unlocked || (movie.points_required || 0) === 0) {
+    return `<a class="btn" href="#" onclick="UI.show('watch',{id:${movie.id}})">▶️ Oglądaj</a>`;
+  }
+
+  return `
+    <button class="btn" onclick="UI.buyMovie(${movie.id}, ${movie.points_required})">
+      🔓 Odblokuj za ${movie.points_required} pkt
+    </button>
+    <span class="small">Masz: <span id="myPoints">…</span> pkt</span>
+  `;
+}
+
+
 /* =========================
    UI
    ========================= */
@@ -420,11 +438,10 @@ const UI = {
         <img class="mt-4" src="${m.thumb}" style="width:100%;max-height:360px;object-fit:cover;border-radius:14px"/>
         <div class="mt-4"><p>${escapeHtml(m.description||"")}</p></div>
 
-        <div class="mt-4">
-          ${me ? (canWatch ? `<a class="btn" href="#" onclick="UI.show('watch',{id:${m.id}})">Oglądaj</a>` :
-            `<button class="btn" onclick="UI.unlock(${m.id})">Odblokuj za punkty</button> <span class="small">Masz: <span id="myPoints">…</span> pkt</span>`) :
-            `<a class="btn" href="#" onclick="UI.show('login')">Zaloguj, aby oglądać</a>`}
-        </div>
+<div class="mt-4">
+  ${renderMovieButton(m, me, unlocked)}
+</div>
+
 
         <hr class="mt-8">
         <section class="mt-4">
