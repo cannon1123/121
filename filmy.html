@@ -723,8 +723,7 @@ const UI = {
     UI.show('movie',{id:movieId});
   },
     async buyMovie(movieId, cost){
-    const me = await Auth.currentProfile();
-    if(!me) return UI.show("login");
+    const me = await Auth.currentProfile(); if(!me) return UI.show("login");
 
     const have = await getPoints(me.id);
     if(have < cost){
@@ -803,6 +802,15 @@ const UI = {
 // Start
 UI.updateHeader();
 UI.search('', { sort: 'new' });
+
+(async function redirectIfNotLoggedIn() {
+  // Sprawdź czy użytkownik jest zalogowany
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+})();
 </script>
 </body>
 </html>
